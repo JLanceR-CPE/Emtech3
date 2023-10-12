@@ -1,0 +1,256 @@
+import React, { useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  FlatList,
+  ImageBackground,
+  TouchableOpacity,
+  Alert,
+  Modal,
+} from "react-native";
+//import Full from "./Full"
+
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
+export default function App() {
+  const [enteredGoalText, setEnteredGoalText] = useState("");
+  const [courseGoals, setCourseGoals] = useState([]);
+
+  const [timesPressed, setTimesPressed] = useState(0);
+
+  //   let textLog = "";
+  //   if (timesPressed > 1) {
+  //     textLog = timesPressed + " Goals";
+  //   } else if (timesPressed > 0) {
+  //     textLog = "onPress";
+  //   }
+
+  function goalInputHandler(enteredText) {
+    setEnteredGoalText(enteredText);
+  }
+
+  function addGoalHandler() {
+    if (enteredGoalText !== "") {
+      setCourseGoals((currentCourseGoals) => [
+        ...currentCourseGoals,
+        enteredGoalText,
+      ]);
+      setEnteredGoalText("");
+    }
+  }
+
+  function removeGoalHandler(goalIndex) {
+    setCourseGoals((currentCourseGoals) => {
+      const updatedGoals = [...currentCourseGoals];
+      updatedGoals.splice(goalIndex, 1);
+      return updatedGoals;
+    });
+  }
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("./assets/test.jpg")}
+        style={styles.backgroundImage}
+      >
+        <View style={styles.appContainer}>
+          <Text style={styles.heading}>Team Honda Civic</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Enter your goal"
+              style={styles.TextInput}
+              onChangeText={goalInputHandler}
+              value={enteredGoalText}
+            />
+            <Button
+              color="#1D4A75"
+              title="Add Goal"
+              onPress={addGoalHandler}
+              data-testid="AccountCircleIcon"
+            />
+          </View>
+          <View style={styles.goalListContainer}>
+            <FlatList
+              data={courseGoals}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.goalItem}>
+                  <Text style={styles.bullet}> ✓ </Text>
+                  <Text style={styles.goalText}>{item}</Text>
+
+                  <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                      Alert.alert("Modal has been closed.");
+                      setModalVisible(!modalVisible);
+                    }}
+                  >
+                    <View style={styles.centeredView}>
+                      <View style={styles.modalView}>
+                        <Text style={styles.modalText}>
+                          You are about to remove this!
+                        </Text>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() =>
+                            removeGoalHandler(index) /
+                            setModalVisible(!modalVisible)
+                          }
+                        >
+                          <Text style={styles.textStyle}>Remove</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose, styles.removeButton]}
+                          onPress={() => setModalVisible(!modalVisible)}
+                        >
+                          <Text style={styles.textStyle}>Cancel</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </Modal>
+                  <Pressable
+                    style={[styles.button, styles.buttonOpen]}
+                    onPress={() => setModalVisible(true)}
+                  >
+                    <Text style={styles.textStyle}>Remove</Text>
+                  </Pressable>
+                </View>
+              )}
+            />
+          </View>
+        </View>
+      </ImageBackground>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  logBox: {
+    padding: 20,
+    margin: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#f0f0f0",
+    backgroundColor: "#f9f9f9",
+  },
+  wrapperCustom: {
+    borderRadius: 8,
+    padding: 6,
+  },
+  text: {
+    fontSize: 16,
+  },
+
+  container: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+  },
+  appContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "rgba(150, 80, 150)",
+  },
+  TextInput: {
+    backgroundColor: "#B9E3F9",
+    padding: 10,
+    marginRight: 5,
+    borderWidth: 1,
+    flex: 1,
+    borderRadius: 60,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    paddingBottom: 10,
+    borderColor: "#EC5C13",
+    marginBottom: 20,
+  },
+  goalListContainer: {
+    flex: 1,
+    //backgroundColor: '#13A3EC',
+  },
+  heading: {
+    fontSize: 30,
+    marginBottom: 30,
+    marginTop: 10,
+    fontFamily: "Damascus",
+    color: "#ffffff",
+  },
+  goalItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  goalText: {
+    color: "#ffffff",
+    marginLeft: 10,
+    fontSize: 16,
+    flex: 1,
+  },
+  bullet: {
+    color: "#ffffff",
+    fontSize: 20,
+  },
+  removeButton: {
+    backgroundColor: "#412947",
+    padding: 5,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  removeButtonText: {
+    color: "white",
+  },
+  //
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#412947",
+  },
+  buttonClose: {
+    backgroundColor: "#412947",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+});
